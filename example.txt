@@ -1,0 +1,28 @@
+Hello there
+Welcome to the super awesomme bbs!
+[L]og in
+[G]uest usage
+[R]egister
+[Q]uit
+Number of messages: 2
+Current messages:
+.---------------------------------------------------------------------------.
+| # | Subject                        | Author         | Date                |
++---+--------------------------------+----------------+---------------------+
+| 1 | first post                     | John           | 2018-06-21T12:28:33 |
+| 2 | The aweseome second first post | jbob the elder | 2018-06-21T12:29:07 |
+'---+--------------------------------+----------------+---------------------'
+
+[#] Read message
+[Q]uit
+#: 2
+Author: jbob the elder
+Subject: The aweseom second first post
+Date (UTC): 2018-06-21T12:29:07
+hi there, this is the first post
+
+[#] Read other message
+[L]ist messages again
+[Q]uit
+OK, bye for now
+
