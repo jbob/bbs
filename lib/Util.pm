@@ -29,7 +29,7 @@ sub printslow {
     my $input = shift;
     for my $c (split '', $input) {
         print $c;
-        usleep(1000*25*0.2); # 25ms ~ 300Baud; 12.5ms ~ 600Baud
+        usleep(1000*25*0.3); # 25ms ~ 300Baud; 12.5ms ~ 600Baud
     }
 }
 
@@ -38,20 +38,31 @@ sub print_about {
     This bbs software/system is brought to you by jbob.
 
     Why?
+
     Your upload filters, imprints, gdpr and other bullshit has now power here.
 
     How?
+
     Perl and MongoDB of course
 
     I wan't feature X!
+
     Then write a message, ideally with "feature request" or something like this in the subject.
 
     Is it secure?
+
     You are using telnet to connect, passwords are not encrypted and there might very well be security bugs in the code.
     This is all part of the retro experience. Think of this more as art instead of professional software.
 
     Why is it so slow?
+
     Also part of the retro experience, ... bitch!
+
+    Code?
+
+    Currently sady only via http/git:
+
+    $ git clone https://github.com/jbob/bbs.git
 EOF
     printslow "\n";
     printslow autoformat $about_text, { all => 1 };
