@@ -125,6 +125,7 @@ while ($session->{state} != $states->{LOGGED_OUT}) {
             if (not $text or not $subject) {
                 printslow "Ok then, you changed your mind. That is fine.\n";
             } else {
+                $subject =~ s/.{45}\K.*//s; # truncate; substr doesn't like if the string is to short
                 my $post = $posts->create({ subject => $subject, text => $text, date => $date});
                 $post->user($session->{user} || 'Anonymous');
                 $post->save;
@@ -154,6 +155,7 @@ while ($session->{state} != $states->{LOGGED_OUT}) {
             my $subject = $reply_to->subject;
             $subject =~s/^Re: //;
             $subject = sprintf "Re: %s", $subject;
+            $subject =~ s/.{45}\K.*//s; # truncate; substr doesn't like if the string is to short
             my $quote = $reply_to->text;
             $quote =~ s/^/: /m;
             $quote = sprintf "On %s, %s wrote:\n%s\n", $reply_to->date, $reply_to->user->name, $quote;

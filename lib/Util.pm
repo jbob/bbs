@@ -81,8 +81,6 @@ sub print_state_new {
 sub print_state_main {
     my $posts = shift;
     my $session = shift;
-    printslow sprintf "Number of messages: %s\n", $posts->count;
-    printslow "Current messages:\n";
     my $table = Text::ASCIITable->new;
     $table->setOptions('hide_FirstLine', 1);
     #$table->setOptions('hide_HeadLine', 1);
