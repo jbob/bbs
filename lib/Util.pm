@@ -203,7 +203,8 @@ sub get_text {
     my ($fh, $filename) = tempfile("text_edit_XXXXX", DIR => '/tmp');
     print $fh  $content;
     close $fh;
-    my $ret = system('nano', $filename);
+    $ENV{LC_CTYPE} = 'en_US.UTF8';
+    my $ret = system('rnano', $filename); # Restricted nano; UTF8 mode
     unless ($ret == 0) {
         my $err;
         if ($? == -1) {
