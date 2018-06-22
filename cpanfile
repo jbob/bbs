@@ -6,3 +6,5 @@ requires 'Term::ReadKey';
 requires 'Text::ASCIITable';
 requires 'File::Temp';
 requires 'Text::Autoformat';
+requires 'XML::RSS::Parser::Lite';
+requires 'LWP::Simple';

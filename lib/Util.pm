@@ -4,6 +4,7 @@ require Exporter;
 @ISA = qw(Exporter);
 @EXPORT_OK = qw (
     printslow
+    print_about
     print_state_new
     print_state_main
     print_message
@@ -12,6 +13,7 @@ require Exporter;
     get_key
     get_input
     get_text
+    fefe
 );
 
 use Time::HiRes qw(usleep);
@@ -19,41 +21,49 @@ use Term::ReadKey;
 use Text::ASCIITable; # Text::ANSITable is way to fancy
 use File::Temp qw/tempfile/;
 use Text::Autoformat;
-
-
+use XML::RSS::Parser::Lite;
+use LWP::Simple;
 
 sub printslow {
     $| = 1; # Autoflush
     my $input = shift;
     for my $c (split '', $input) {
         print $c;
-        usleep(1000*25*0.5); # 25ms ~ 300Baud; 12.5ms ~ 600Baud
+        usleep(1000*25*0.2); # 25ms ~ 300Baud; 12.5ms ~ 600Baud
     }
 }
 
-sub print_state_new {
-    my $greeting = <<'EOF';
-              | |
- __      _____| | ___ ___  _ __ ___   ___
- \ \ /\ / / _ \ |/ __/ _ \| '_ ` _ \ / _ \
-  \ V  V /  __/ | (_| (_) | | | | | |  __/
-   \_/\_/_\___|_|\___\___/|_| |_| |_|\___|
-        | |        | | | |
-        | |_ ___   | |_| |__   ___
-        | __/ _ \  | __| '_ \ / _ \
-        | || (_) | | |_| | | |  __/
-         \__\___/  _\__|_|_|_|\___|
-            |  _ \|  _ \ / ____|
-            | |_) | |_) | (___
-            |  _ <|  _ < \___ \
-            | |_) | |_) |____) |
-            |____/|____/|_____/
+sub print_about {
+    my $about_text = <<'EOF';
+    This bbs software/system is brought to you by jbob.
+
+    Why?
+    Your upload filters, imprints, gdpr and other bullshit has now power here.
+
+    How?
+    Perl and MongoDB of course
+
+    I wan't feature X!
+    Then write a message, ideally with "feature request" or something like this in the subject.
+
+    Is it secure?
+    You are using telnet to connect, passwords are not encrypted and there might very well be security bugs in the code.
+    This is all part of the retro experience. Think of this more as art instead of professional software.
+
+    Why is it so slow?
+    Also part of the retro experience, ... bitch!
 EOF
-    printslow $greeting;
     printslow "\n";
+    printslow autoformat $about_text, { all => 1 };
+    printslow "\n";
+
+}
+
+sub print_state_new {
     printslow "[L]og in\n";
     printslow "[G]uest usage\n";
     printslow "[R]egister\n";
+    printslow "[A]bout\n";
     printslow "[Q]uit\n";
 }
 
@@ -85,6 +95,7 @@ sub print_state_main {
     printslow "[N]ext message page\n";
     printslow "[P]revious message page\n";
     printslow "[W]rite new message\n";
+    printslow "[F]efes Blog Reader\n";
     printslow "[Q]uit\n";
 }
 
@@ -142,6 +153,10 @@ sub register {
         printslow "Passwords do not match!\n";
         exit 1;
     }
+    if (not $username or not $password) {
+        printslow "You should have entered something\n";
+        exit 1;
+    }
     my $clone = $users->search({ name => $username });
     if ($clone->count != 0) {
         printslow "Username already taken\n";
@@ -156,7 +171,7 @@ sub get_key {
     ReadMode 4;
     my $input = ReadKey(0);
     ReadMode 0;
-    return $input
+    return $input;
 }
 
 sub get_secret_input {
@@ -197,7 +212,23 @@ sub get_text {
     close $fh;
     unlink $filename;
     return if $content eq $newcontent;
-    return autoformat($newcontent, { all => 1 });
+    return autoformat $newcontent, { all => 1 };
+}
+
+sub fefe {
+    printslow "Working...\n";
+    my $xml = get('http://blog.fefe.de/rss.xml');
+    my $rp = XML::RSS::Parser::Lite->new;
+    $rp->parse($xml);
+
+    my $output = sprintf "The latest from %s:\n\n", $rp->get('title');
+    #for (my $i; $i < $rp->count(); $i++) {
+    for (my $i; $i < 5; $i++) {
+        my $it = $rp->get($i);
+	$output .= sprintf "* %s -- %s\n\n", $it->get('title'), $it->get('url');
+    }
+    printslow autoformat $output, { all => 1 };
+    printslow "\n\n";
 }
 
 1;

@@ -14,6 +14,7 @@ binmode(STDIN, ":utf8");
 use MyModel;
 use Util qw(
     printslow
+    print_about
     print_state_new
     print_state_main
     print_message
@@ -22,6 +23,7 @@ use Util qw(
     get_key
     get_input
     get_text
+    fefe
 );
 
 my $states = {
@@ -46,12 +48,25 @@ my $session = {};
 $session->{state} = $states->{NEW};
 $session->{page} = 0; # Paging of message list
 
-# Quick'n'Dirty DB poppulation
-#my $u1 = $users->create({ name => 'jbob the elder', pw => 'doe' });
-#my $p1 = $posts->create({ subject => 'The aweseome first post', date => DateTime->now, text => "hi there, this is the first post"  });
-#$p1->user($u1);
-#$p1->save;
-#$u1->save;
+my $greeting = <<'EOF';
+              | |
+ __      _____| | ___ ___  _ __ ___   ___
+ \ \ /\ / / _ \ |/ __/ _ \| '_ ` _ \ / _ \
+  \ V  V /  __/ | (_| (_) | | | | | |  __/
+   \_/\_/_\___|_|\___\___/|_| |_| |_|\___|
+        | |        | | | |
+        | |_ ___   | |_| |__   ___
+        | __/ _ \  | __| '_ \ / _ \
+        | || (_) | | |_| | | |  __/
+         \__\___/  _\__|_|_|_|\___|
+            |  _ \|  _ \ / ____|
+            | |_) | |_) | (___
+            |  _ <|  _ < \___ \
+            | |_) | |_) |____) |
+            |____/|____/|_____/
+EOF
+    printslow $greeting;
+    printslow "\n";
 
 while ($session->{state} != $states->{LOGGED_OUT}) {
     if ($session->{state} == $states->{NEW}) {
@@ -66,7 +81,10 @@ while ($session->{state} != $states->{LOGGED_OUT}) {
             $session->{state} = $states->{REGISTER};
         } elsif ($input =~ m/q/i) {
             $session->{state} = $states->{LOGGED_OUT};
-        }
+        } elsif ($input =~ m/a/i) {
+            print_about;
+	    $session->{state} = $states->{NEW};
+	}
     } elsif ($session->{state} == $states->{LOGGING_IN}) {
         $session->{user} = log_in $users;
         printslow sprintf "Welcome back %s\n", $session->{user}->name;
@@ -89,6 +107,8 @@ while ($session->{state} != $states->{LOGGED_OUT}) {
         } elsif ($input =~ m/p/i) {
             --$session->{page};
             $session->{page} = 0 if $session->{page} < 0;
+        } elsif ($input =~ m/f/i) {
+            fefe;
         } elsif ($input =~ m/q/i) {
             $session->{state} = $states->{LOGGED_OUT};
         }
@@ -103,7 +123,7 @@ while ($session->{state} != $states->{LOGGED_OUT}) {
             my $text = get_text "Your text goes here!";
             my $date = DateTime->now;
             if (not $text or not $subject) {
-                printslow "Ok then, you changed your mind\n";
+                printslow "Ok then, you changed your mind. That is fine.\n";
             } else {
                 my $post = $posts->create({ subject => $subject, text => $text, date => $date});
                 $post->user($session->{user} || 'Anonymous');
@@ -140,7 +160,7 @@ while ($session->{state} != $states->{LOGGED_OUT}) {
             my $text = get_text $quote;
             my $date = DateTime->now;
             if (not $text or not $subject) {
-                printslow "Ok then, you changed your mind\n";
+                printslow "Ok then, you changed your mind. That is fine.\n";
             } else {
                 my $post = $posts->create({ subject => $subject, text => $text, date => $date, parent => $reply_to });
                 $post->user($session->{user} || 'Anonymous');
