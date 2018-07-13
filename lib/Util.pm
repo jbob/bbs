@@ -138,6 +138,7 @@ sub log_in {
         printslow "You should have entered something\n";
         exit 1;
     }
+    $username =~ s/[\b]//g; # Sanitize;
     my $clone = $users->search({ name => $username });
     if ($clone->count != 1) {
         printslow "Nope\n";
@@ -166,6 +167,7 @@ sub register {
         printslow "You should have entered something\n";
         exit 1;
     }
+    $username =~ s/[\b]//g; # Sanitize;
     my $clone = $users->search({ name => $username });
     if ($clone->count != 0) {
         printslow "Username already taken\n";
