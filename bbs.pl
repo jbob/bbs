@@ -129,7 +129,7 @@ while ($session->{state} != $states->{LOGGED_OUT}) {
             if (not $text or not $subject) {
                 printslow "Ok then, you changed your mind. That is fine.\n";
             } else {
-	        $subject =~ s/[\b]//g; # Sanitize
+                $subject =~ s/[\b]//g; # Sanitize
                 $subject =~ s/.{45}\K.*//s; # truncate; substr doesn't like if the string is to short
                 my $post = $posts->create({ subject => $subject, text => $text, date => $date});
                 $post->user($session->{user} || 'Anonymous');
@@ -160,7 +160,7 @@ while ($session->{state} != $states->{LOGGED_OUT}) {
             my $subject = $reply_to->subject;
             $subject =~s/^Re: //;
             $subject = sprintf "Re: %s", $subject;
-	    $subject =~ s/[\b]//g; # Sanitize
+            $subject =~ s/[\b]//g; # Sanitize
             $subject =~ s/.{45}\K.*//s; # truncate; substr doesn't like if the string is to short
             my $quote = $reply_to->text;
             $quote =~ s/^/: /m;
